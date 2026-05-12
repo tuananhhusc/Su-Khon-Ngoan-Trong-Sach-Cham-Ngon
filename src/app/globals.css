@@ -1,26 +1,473 @@
 @import "tailwindcss";
 
+/* ============================================
+   DESIGN TOKENS — Unified Academic Palette
+   ============================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfdf5;    /* Seamless warm paper background */
+  --gold: #b38b36;
+  --gold-light: #d6b876;
+  --gold-dim: rgba(179, 139, 54, 0.15);
+  --deep-red: #8a1c1c;      /* Oxford red */
+  --deep-red-light: #a82e2e;
+  --ink: #1a1a1a;           /* Highest contrast text */
+  --ink-light: #4a4a4a;     
+  --ink-muted: #737373;     
+
+  --foreground: var(--ink);
+  --base-font-size: 100%;
+}
+
+/* Dark Mode - "Night Reading Room" */
+.theme-night {
+  --background: #121212;
+  --ink: #e0e0e0;
+  --ink-light: #b3b3b3;
+  --ink-muted: #808080;
+  --deep-red: #d65c5c;
+  --deep-red-light: #e87676;
+  --gold: #c9a657;
+  --gold-dim: rgba(201, 166, 87, 0.15);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dim: var(--gold-dim);
+  --color-deep-red: var(--deep-red);
+  --color-deep-red-light: var(--deep-red-light);
+  --color-ink: var(--ink);
+  --color-ink-light: var(--ink-light);
+  --color-ink-muted: var(--ink-muted);
+  --font-serif: var(--font-lora);
+  --font-sans: var(--font-be-vietnam);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================
+   BASE STYLES
+   ============================================ */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  font-size: var(--base-font-size);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  max-width: 100%;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-lora), 'Lora', Georgia, 'Times New Roman', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  max-width: 100%;
+}
+
+::selection {
+  background-color: var(--gold-dim);
+  color: var(--ink);
+}
+
+.theme-night ::selection {
+  background-color: var(--gold-dim);
+  color: var(--background);
+}
+
+/* ============================================
+   PROGRESS BAR & STICKY HEADER
+   ============================================ */
+.reading-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--deep-red);
+  z-index: 100;
+  transition: width 0.1s linear;
+}
+
+.sticky-header {
+  position: fixed;
+  top: 3px;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: rgba(253, 253, 245, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease, background-color 0.4s ease;
+}
+
+.theme-night .sticky-header {
+  background: rgba(18, 18, 18, 0.95);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.sticky-header.scrolled {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   ARTICLE PROSE — Full Layout Optimization
+   ============================================ */
+.article-prose {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: var(--ink);
+  max-width: 85ch; /* Widened for better screen utilization without losing readability */
+  margin: 0 auto;
+  width: 100%;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 1536px) {
+  .article-prose {
+    max-width: 95ch; /* Extra wide on huge screens */
+    font-size: 1.15rem;
+  }
+}
+
+.article-prose p {
+  margin-bottom: 1.6em;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
+  font-size: 4rem;
+  line-height: 0.8;
+  font-weight: 700;
+  color: var(--ink);
+  padding-right: 0.15em;
+  padding-top: 0.1em;
+}
+
+/* ============================================
+   HEADINGS (Scholarly style)
+   ============================================ */
+.article-prose h2 {
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--gold-dim);
+  letter-spacing: -0.01em;
+  clear: both;
+}
+
+.article-prose h3 {
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink-light);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  clear: both;
+  font-style: italic;
+}
+
+/* ============================================
+   BLOCKQUOTES (Academic Standard)
+   ============================================ */
+.article-prose blockquote {
+  margin: 2.5rem 0 2.5rem 2rem;
+  padding: 0 0 0 1.5rem;
+  border-left: 2px solid var(--ink-muted);
+  font-style: italic;
+  color: var(--ink-light);
+  font-size: 1em;
+}
+
+@media (max-width: 768px) {
+  .article-prose blockquote {
+    margin: 2rem 0 2rem 1rem;
+  }
+}
+
+/* ============================================
+   TABLES (APA Academic Format)
+   ============================================ */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 3rem 0;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  min-width: 700px;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+.article-prose thead th {
+  color: var(--ink);
+  font-family: var(--font-lora), 'Lora', serif;
+  font-weight: 600;
+  font-style: italic;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--ink);
+}
+
+.article-prose tbody tr {
+  border-bottom: none;
+}
+
+.article-prose tbody td {
+  padding: 1rem 1.25rem;
+  vertical-align: top;
+  color: var(--ink-light);
+}
+
+.article-prose tbody td:first-child {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+.article-prose a {
+  color: var(--deep-red);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+.article-prose a:hover {
+  color: var(--deep-red-light);
+  text-decoration-color: var(--deep-red);
+}
+
+/* ============================================
+   TOOLTIP FOOTNOTES (PURE CSS)
+   ============================================ */
+.footnote-ref {
+  font-family: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--deep-red);
+  font-weight: 600;
+  cursor: help;
+  padding: 0 0.15em;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.footnote-ref:hover {
+  color: var(--ink);
+}
+
+.footnote-ref::after {
+  content: attr(data-footnote);
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: max-content;
+  max-width: 400px;
+  background: var(--ink);
+  color: var(--background);
+  padding: 0.85rem 1.15rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: var(--font-be-vietnam), sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.footnote-ref::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--ink) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s;
+  z-index: 1000;
+}
+
+.footnote-ref:hover::after,
+.footnote-ref:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.theme-night .footnote-ref::after {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+.theme-night .footnote-ref::before {
+  border-color: #2a2a2a transparent transparent transparent;
+}
+
+/* ============================================
+   TOC SIDEBAR
+   ============================================ */
+.toc-sidebar {
+  position: sticky;
+  top: 6rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) transparent;
+  padding-right: 1.5rem;
+  width: 280px;
+}
+
+.toc-link {
+  display: block;
+  font-family: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid transparent;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  line-height: 1.5;
+  position: relative;
+}
+
+.toc-link:hover {
+  color: var(--ink);
+}
+
+.toc-link.active {
+  color: var(--deep-red);
+  border-left-color: var(--deep-red);
+  font-weight: 600;
+}
+
+/* ============================================
+   ARTICLE HERO / HEADER
+   ============================================ */
+.article-hero {
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .article-hero {
+    padding: 5rem 1.5rem 4rem;
+  }
+}
+
+.article-hero h1 {
+  font-family: var(--font-lora), 'Lora', Georgia, serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.35;
+  max-width: 900px;
+  margin: 0 auto;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 768px) {
+  .article-hero h1 {
+    font-size: 2.6rem;
+  }
+}
+
+.article-hero .subtitle {
+  font-family: var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink-light);
+  margin-top: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================
+   SECTION DIVIDER
+   ============================================ */
+.section-divider {
+  text-align: center;
+  margin: 4rem 0;
+  font-size: 1.25rem;
+  color: var(--gold);
+  letter-spacing: 0.5em;
+}
+
+/* ============================================
+   BIBLIOGRAPHY / REFERENCES SECTION
+   ============================================ */
+.references-section {
+  margin-top: 5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--ink-muted);
+}
+
+.reference-item {
+  font-family: var(--font-lora), 'Lora', serif;
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  word-break: break-word;
+}
+
+/* ============================================
+   SACRED ART / IMAGES
+   ============================================ */
+.sacred-art {
+  width: 100%;
+  height: auto;
+  margin: 3rem 0 1rem;
+  filter: sepia(0.1) contrast(1.05);
+}
+
+.sacred-art-caption {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  font-family: var(--font-lora), serif;
+  margin-bottom: 3rem;
+  font-style: italic;
+}
+
+/* ============================================
+   PRINT STYLESHEET
+   ============================================ */
+@media print {
+  @page { margin: 2.5cm; size: A4 portrait; }
+  html, body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+  .sticky-header, .toc-sidebar, .reading-progress-bar, .scroll-to-top, .reading-toolbar, button, .article-hero { display: none !important; }
+  .article-prose { max-width: 100% !important; }
+  .article-prose h2 { page-break-before: auto; page-break-after: avoid; }
+  .article-prose blockquote { border-left: 1px solid #000 !important; }
+  .sacred-art { max-height: 400px; object-fit: contain; }
 }
